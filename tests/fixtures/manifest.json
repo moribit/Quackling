@@ -1,0 +1,147 @@
+{
+  "select42": {
+    "sql": "SELECT 42 AS answer",
+    "len": 95,
+    "msgtype": 4
+  },
+  "bool": {
+    "sql": "SELECT true AS t, false AS f",
+    "len": 107,
+    "msgtype": 4
+  },
+  "nulls": {
+    "sql": "SELECT NULL::INTEGER AS a, 1::INTEGER AS b",
+    "len": 124,
+    "msgtype": 4
+  },
+  "varchar": {
+    "sql": "SELECT 'hello' AS greeting, 'w\u00f6rld\ud83e\udd86' AS unicode",
+    "len": 135,
+    "msgtype": 4
+  },
+  "mixed": {
+    "sql": "SELECT 1::TINYINT a,2::SMALLINT b,3::INTEGER c,4::BIGINT d,5.5::FLOAT e,6.25::DOUBLE f,'x' g",
+    "len": 235,
+    "msgtype": 4
+  },
+  "multirow": {
+    "sql": "SELECT i, i*2 AS double_i FROM range(5) t(i)",
+    "len": 193,
+    "msgtype": 4
+  },
+  "unsigned": {
+    "sql": "SELECT 1::UTINYINT a,2::USMALLINT b,3::UINTEGER c,4::UBIGINT d",
+    "len": 160,
+    "msgtype": 4
+  },
+  "hugeint": {
+    "sql": "SELECT 170141183460469231731687303715884105727::HUGEINT AS h",
+    "len": 101,
+    "msgtype": 4
+  },
+  "largeresult": {
+    "sql": "SELECT i FROM range(5000) t(i)",
+    "len": 40152,
+    "msgtype": 4
+  },
+  "nullmix": {
+    "sql": "SELECT CASE WHEN i%2=0 THEN NULL ELSE i END::INTEGER AS v FROM range(10) t(i)",
+    "len": 137,
+    "msgtype": 4
+  },
+  "error": {
+    "sql": "SELECT * FROM nonexistent_table_xyz",
+    "len": 175,
+    "msgtype": 100
+  },
+  "emptyresult": {
+    "sql": "SELECT 1 AS a WHERE false",
+    "len": 53,
+    "msgtype": 4
+  },
+  "struct": {
+    "sql": "SELECT {'a': 1, 'b': 'x'} AS s",
+    "len": 182,
+    "msgtype": 4
+  },
+  "list": {
+    "sql": "SELECT [10,20,30] AS l",
+    "len": 149,
+    "msgtype": 4
+  },
+  "list_nulls": {
+    "sql": "SELECT [1,NULL,3] AS l",
+    "len": 159,
+    "msgtype": 4
+  },
+  "array": {
+    "sql": "SELECT [1,2,3]::INTEGER[3] AS arr",
+    "len": 146,
+    "msgtype": 4
+  },
+  "map": {
+    "sql": "SELECT MAP{'a': 1, 'b': 2} AS m",
+    "len": 251,
+    "msgtype": 4
+  },
+  "enum": {
+    "sql": "SELECT 'happy'::ENUM('sad','ok','happy') AS mood",
+    "len": 143,
+    "msgtype": 4
+  },
+  "union": {
+    "sql": "SELECT union_value(num := 2) AS u",
+    "len": 182,
+    "msgtype": 4
+  },
+  "nested_deep": {
+    "sql": "SELECT {'inner': [1,2], 'name': 'x'} AS s",
+    "len": 250,
+    "msgtype": 4
+  },
+  "temporal": {
+    "sql": "SELECT DATE '2024-03-15' d, TIME '12:34:56' t, TIMESTAMP '2024-03-15 12:34:56' ts, INTERVAL 3 DAY iv",
+    "len": 184,
+    "msgtype": 4
+  },
+  "decimal": {
+    "sql": "SELECT 12.34::DECIMAL(10,2) a, 1.5::DECIMAL(4,1) b, 123456789012345678.99::DECIMAL(30,2) c",
+    "len": 236,
+    "msgtype": 4
+  },
+  "uuid": {
+    "sql": "SELECT '0cc7435c-7cc0-4836-b03d-53aed12d1006'::UUID AS u",
+    "len": 101,
+    "msgtype": 4
+  },
+  "blob": {
+    "sql": "SELECT 'abc'::BLOB AS b, encode('hi') AS raw",
+    "len": 114,
+    "msgtype": 4
+  },
+  "variant": {
+    "sql": "SELECT {'a': 1, 'b': 'two'}::VARIANT AS v",
+    "len": 730,
+    "msgtype": 4
+  },
+  "bignum": {
+    "sql": "SELECT 123456789012345678901234567890123456789012::BIGNUM AS b",
+    "len": 107,
+    "msgtype": 4
+  },
+  "enum_large": {
+    "sql": "SELECT ('v'||(i%300))::VARCHAR AS e FROM range(3) t(i)",
+    "len": 94,
+    "msgtype": 4
+  },
+  "map_nested": {
+    "sql": "SELECT MAP{'k': [1,2]} AS m",
+    "len": 299,
+    "msgtype": 4
+  },
+  "union_multi": {
+    "sql": "SELECT union_value(s := 'txt') AS u",
+    "len": 179,
+    "msgtype": 4
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "quackling",
+  "version": "0.1.0",
+  "description": "Lightweight DuckDB Quack protocol client for the browser, decoded in WebAssembly",
+  "keywords": ["duckdb", "quack", "wasm", "webassembly", "sql", "analytics"],
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./quack.js",
+  "module": "./quack.js",
+  "types": "./quack.d.ts",
+  "exports": {
+    ".": {
+      "types": "./quack.d.ts",
+      "default": "./quack.js"
+    },
+    "./quackling.wasm": "./quackling.wasm"
+  },
+  "files": [
+    "quack.js",
+    "quack.d.ts",
+    "quackling.wasm",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test ./test/*.test.mjs"
+  }
+}

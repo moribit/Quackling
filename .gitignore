@@ -1,0 +1,13 @@
+zig-cache/
+zig-out/
+benchmark-results/
+.zig-cache/
+zig-pkg/
+.DS_Store
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+node_modules/
+.wrangler/
+deploy/worker/chat_worker.wasm
