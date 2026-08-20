@@ -69,7 +69,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        duckdb: ["1.4.1", "latest"]
+        # Quack became a core extension, including quack_serve, in v1.5.3.
+        duckdb: ["1.5.3", "latest"]
     steps:
       - uses: actions/checkout@v4
       - uses: mlugg/setup-zig@v2

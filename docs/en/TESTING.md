@@ -334,7 +334,8 @@ INSERT.
 
 **What it proves.** That the model the other five layers encode matches a real
 DuckDB. This is the layer that catches an upstream wire-format change. CI runs
-it against both a pinned DuckDB (1.4.1) and `latest`.
+it against both DuckDB 1.5.3 (the first release that shipped Quack as a core
+extension with `quack_serve`) and `latest`.
 
 **What it CANNOT prove.** Anything, when no server is present. It also does not
 exercise TLS — everything runs over plain HTTP against loopback.
