@@ -90,7 +90,7 @@ jobs:
           (sleep 300 > qpipe &)
           ./duckdb < qpipe > server.log 2>&1 &
           sleep 2
-          printf "LOAD quack;\nCALL quack_serve('quack:localhost:9494', token => 'ci_token');\n" > qpipe
+          printf "INSTALL quack;\nLOAD quack;\nCALL quack_serve('quack:localhost:9494', token => 'ci_token');\n" > qpipe
           for i in $(seq 1 30); do
             curl -sf http://localhost:9494/ >/dev/null && break
             sleep 1
@@ -130,9 +130,7 @@ jobs:
         with:
           version: ${{ env.ZIG_VERSION }}
       - name: shellcheck (POSIX sh)
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
-          shellcheck -s sh scripts/install.sh scripts/checksums.sh
+        run: shellcheck -s sh scripts/install.sh scripts/checksums.sh
       - name: PowerShell parse check
         shell: pwsh
         run: |

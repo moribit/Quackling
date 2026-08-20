@@ -666,6 +666,45 @@ test "concurrent acquire and release stays consistent" {
     try testing.expectEqual(@as(u64, 8 * 200), s.acquires);
 }
 
+test "acquire waits for the pool mutex" {
+    // Hold the mutex ourselves and prove that another thread cannot enter the
+    // acquire critical section. This catches removal of acquire's lock without
+    // depending on a rare data race to happen during a stress test.
+    var tio = TestIo.init();
+    defer tio.deinit();
+    var pool = try testPool(&tio, 1, 0);
+    defer pool.deinit();
+
+    const Probe = struct {
+        var started: bool = false;
+        var acquired: bool = false;
+
+        fn run(p: *Pool) void {
+            @atomicStore(bool, &started, true, .release);
+            var lease = p.acquire(null) catch return;
+            @atomicStore(bool, &acquired, true, .release);
+            lease.release();
+        }
+    };
+    Probe.started = false;
+    Probe.acquired = false;
+
+    pool.mutex.lockUncancelable(tio.io());
+    const t = try std.Thread.spawn(.{}, Probe.run, .{&pool});
+    while (!@atomicLoad(bool, &Probe.started, .acquire)) {
+        std.Thread.yield() catch {};
+    }
+    // Give the worker ample opportunity to enter acquire. With the lock in
+    // place it cannot do so; the mutation that removes the lock does so at
+    // once, then blocks while returning the lease.
+    for (0..1000) |_| std.Thread.yield() catch {};
+    const acquired_while_locked = @atomicLoad(bool, &Probe.acquired, .acquire);
+    pool.mutex.unlock(tio.io());
+    t.join();
+
+    try testing.expect(!acquired_while_locked);
+}
+
 test "a connection is never leased to two holders at once" {
     // Track which pointers are currently out; any overlap is a pool bug.
     var tio = TestIo.init();
