@@ -243,7 +243,7 @@ pub const Vector = struct {
         return switch (@typeInfo(T)) {
             .int => std.mem.readInt(T, bytes[off..][0..@sizeOf(T)], .little),
             .float => @bitCast(std.mem.readInt(
-                std.meta.Int(.unsigned, @bitSizeOf(T)),
+                @Int(.unsigned, @bitSizeOf(T)),
                 bytes[off..][0..@sizeOf(T)],
                 .little,
             )),

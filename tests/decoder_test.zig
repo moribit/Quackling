@@ -77,7 +77,7 @@ const B = struct {
 /// A minimal LogicalType object: `{100: id}`.
 fn writeType(b: *B, id: LogicalTypeId) !void {
     try b.field(100);
-    try b.uvar(@intFromEnum(id));
+    try b.uvar(@backingInt(id));
     try b.end();
 }
 
@@ -225,7 +225,7 @@ fn writeDictChunk(b: *B, sel: []const u32, dict: []const i32) !void {
 
     // Vector: field 90 = DICTIONARY
     try b.field(90);
-    try b.uvar(@intFromEnum(quackling.VectorType.dictionary));
+    try b.uvar(@backingInt(quackling.VectorType.dictionary));
     try b.field(91); // sel_vector blob
     var sel_bytes: [64]u8 = undefined;
     for (sel, 0..) |v, i| std.mem.writeInt(u32, sel_bytes[i * 4 ..][0..4], v, .little);
@@ -279,7 +279,7 @@ test "a selection vector shorter than the row count is rejected" {
     try b.field(102);
     try b.uvar(1);
     try b.field(90);
-    try b.uvar(@intFromEnum(quackling.VectorType.dictionary));
+    try b.uvar(@backingInt(quackling.VectorType.dictionary));
     try b.field(91);
     try b.blob(&[_]u8{ 0, 0, 0, 0 }); // only 1 index for 4 rows
     try b.field(92);
@@ -306,7 +306,7 @@ fn writeEnumChunk(b: *B, labels: []const []const u8, codes: []const u8) !void {
     try b.uvar(1);
     // LogicalType { 100: ENUM, 101: ExtraTypeInfo{100: enum, 200: count, 201: values} }
     try b.field(100);
-    try b.uvar(@intFromEnum(LogicalTypeId.@"enum"));
+    try b.uvar(@backingInt(LogicalTypeId.@"enum"));
     try b.field(101);
     try b.boolean(true); // type_info present
     try b.field(100);
@@ -362,7 +362,7 @@ test "an ENUM whose declared count disagrees with its label list is rejected" {
     try b.field(101);
     try b.uvar(1);
     try b.field(100);
-    try b.uvar(@intFromEnum(LogicalTypeId.@"enum"));
+    try b.uvar(@backingInt(LogicalTypeId.@"enum"));
     try b.field(101);
     try b.boolean(true);
     try b.field(100);
@@ -480,7 +480,7 @@ test "an FSST vector is reported rather than guessed at" {
     try b.field(102);
     try b.uvar(1);
     try b.field(90);
-    try b.uvar(@intFromEnum(quackling.VectorType.fsst));
+    try b.uvar(@backingInt(quackling.VectorType.fsst));
     try b.end();
     try b.end();
 
@@ -495,7 +495,7 @@ test "nesting deeper than the depth limit is rejected" {
     var i: usize = 0;
     while (i < 200) : (i += 1) {
         try b.field(100);
-        try b.uvar(@intFromEnum(LogicalTypeId.list));
+        try b.uvar(@backingInt(LogicalTypeId.list));
         try b.field(101);
         try b.boolean(true);
         try b.field(100);
@@ -518,7 +518,7 @@ test "a sequence vector computes values without a payload" {
     try b.field(102);
     try b.uvar(1);
     try b.field(90);
-    try b.uvar(@intFromEnum(quackling.VectorType.sequence));
+    try b.uvar(@backingInt(quackling.VectorType.sequence));
     try b.field(91);
     try b.ivar(100); // start
     try b.field(92);
@@ -544,7 +544,7 @@ test "a constant vector repeats a single stored value" {
     try b.field(102);
     try b.uvar(1);
     try b.field(90);
-    try b.uvar(@intFromEnum(quackling.VectorType.constant));
+    try b.uvar(@backingInt(quackling.VectorType.constant));
     // The single value follows inline.
     try b.field(100);
     try b.boolean(false);

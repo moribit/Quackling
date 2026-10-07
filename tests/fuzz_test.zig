@@ -132,7 +132,13 @@ test "fuzz: structurally plausible but hostile messages are rejected" {
         // Field id that does not belong in this message.
         &[_]u8{ 0x63, 0x00, 0x01, 0xFF, 0xFF },
         // Deeply nested objects, to probe the depth limit.
-        &[_]u8{ 0x01, 0x00, 0x01, 0x65, 0x00, 0x01 } ** 40,
+        comptime blk: {
+            const pattern = [_]u8{ 0x01, 0x00, 0x01, 0x65, 0x00, 0x01 };
+            var nested: [pattern.len * 40]u8 = undefined;
+            for (0..40) |i| @memcpy(nested[i * pattern.len ..][0..pattern.len], &pattern);
+            const bytes = nested;
+            break :blk &bytes;
+        },
     };
 
     var buf: [4096]u8 = undefined;

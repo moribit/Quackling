@@ -192,7 +192,7 @@ export fn quack_on_connect_response(len: usize) i32 {
             return -1;
         },
         else => {
-            setError("unexpected message type {d}", .{@intFromEnum(header.type)});
+            setError("unexpected message type {d}", .{@backingInt(header.type)});
             return -1;
         },
     }
@@ -245,7 +245,7 @@ export fn quack_on_query_response(len: usize) i32 {
             return -1;
         },
         else => {
-            setError("unexpected message type {d}", .{@intFromEnum(header.type)});
+            setError("unexpected message type {d}", .{@backingInt(header.type)});
             return -1;
         },
     }
@@ -329,7 +329,7 @@ export fn quack_on_fetch_response(len: usize) i32 {
             return -1;
         },
         else => {
-            setError("unexpected message type {d}", .{@intFromEnum(header.type)});
+            setError("unexpected message type {d}", .{@backingInt(header.type)});
             return -1;
         },
     }
@@ -551,7 +551,7 @@ export fn quack_append_column(type_id: i32, rows: usize) i32 {
         return -1;
     }
 
-    append_types[append_cols] = .{ .id = @enumFromInt(@as(u8, @intCast(type_id))) };
+    append_types[append_cols] = .{ .id = @fromBackingInt(@intCast(@as(u8, @intCast(type_id)))) };
     append_values[append_cols] = append_value_buf[append_value_used..][0..rows];
     append_value_used += rows;
     append_filled[append_cols] = 0;
@@ -699,7 +699,7 @@ export fn quack_on_append_response(len: usize) i32 {
             return -1;
         },
         else => {
-            setError("unexpected message type {d}", .{@intFromEnum(header.type)});
+            setError("unexpected message type {d}", .{@backingInt(header.type)});
             return -1;
         },
     }
@@ -788,8 +788,8 @@ export fn quack_vector_close(h: i32) void {
 
 /// Classify a vector so JS picks the right navigation.
 export fn quack_vector_kind(h: i32) i32 {
-    const v = handleGet(h) orelse return @intFromEnum(VectorShape.invalid);
-    return @intFromEnum(switch (v.type.id) {
+    const v = handleGet(h) orelse return @backingInt(VectorShape.invalid);
+    return @backingInt(switch (v.type.id) {
         .@"struct", .variant => VectorShape.@"struct",
         .list => VectorShape.list,
         .array => VectorShape.array,
@@ -842,7 +842,7 @@ export fn quack_vector_child(h: i32, i: usize) i32 {
 /// The declared LogicalTypeId of a vector, so JS can label values.
 export fn quack_vector_type(h: i32) i32 {
     const v = handleGet(h) orelse return -1;
-    return @intFromEnum(v.type.id);
+    return @backingInt(v.type.id);
 }
 
 /// For LIST/MAP: where row `row`'s elements begin in the child vector.
@@ -886,10 +886,10 @@ export fn quack_vector_is_null(h: i32, row: usize) i32 {
 
 /// `quack_value_kind`, but for a handle rather than a (chunk,col).
 export fn quack_vector_value_kind(h: i32, row: usize) i32 {
-    const v = handleGet(h) orelse return @intFromEnum(ValueKind.unsupported);
-    if (v.isNull(row)) return @intFromEnum(ValueKind.is_null);
-    const val = v.getValue(row) catch return @intFromEnum(ValueKind.unsupported);
-    return @intFromEnum(classify(val));
+    const v = handleGet(h) orelse return @backingInt(ValueKind.unsupported);
+    if (v.isNull(row)) return @backingInt(ValueKind.is_null);
+    const val = v.getValue(row) catch return @backingInt(ValueKind.unsupported);
+    return @backingInt(classify(val));
 }
 
 export fn quack_vector_get_i64(h: i32, row: usize) i64 {
@@ -961,7 +961,7 @@ export fn quack_column_name_len(i: usize) usize {
 export fn quack_column_type(i: usize) i32 {
     const c = current orelse return -1;
     if (i >= c.types.len) return -1;
-    return @intFromEnum(c.types[i].id);
+    return @backingInt(c.types[i].id);
 }
 
 /// The chunks of the batch currently in hand: the PREPARE batch until the first
@@ -1056,17 +1056,17 @@ pub const ValueKind = enum(i32) {
 /// Classify a cell. JS calls this once per value and then reads accordingly.
 export fn quack_value_kind(chunk: usize, col: usize, row: usize) i32 {
     const chunks = activeChunks();
-    if (chunk >= chunks.len) return @intFromEnum(ValueKind.unsupported);
+    if (chunk >= chunks.len) return @backingInt(ValueKind.unsupported);
     const c = &chunks[chunk];
-    if (c.isNull(col, row)) return @intFromEnum(ValueKind.is_null);
+    if (c.isNull(col, row)) return @backingInt(ValueKind.is_null);
 
     const v = c.getValue(col, row) catch |e| switch (e) {
         // A nested type is reachable through the vector handle API, not through
         // the flat Value union; report that rather than a wrong scalar.
-        error.UnsupportedType => return @intFromEnum(ValueKind.unsupported),
-        else => return @intFromEnum(ValueKind.unsupported),
+        error.UnsupportedType => return @backingInt(ValueKind.unsupported),
+        else => return @backingInt(ValueKind.unsupported),
     };
-    return @intFromEnum(classify(v));
+    return @backingInt(classify(v));
 }
 
 /// Map a decoded value onto the kind JS should read it as.

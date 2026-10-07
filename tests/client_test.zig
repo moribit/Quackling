@@ -72,7 +72,7 @@ fn writeIntChunk(a: std.mem.Allocator, w: *Writer, values: []const i32) !void {
     try w.writePropertyUVarIntWithDefault(100, @as(u32, @intCast(values.len))); // rows
     try w.writeFieldId(101); // types
     try w.writeUVarInt(@as(u64, 1));
-    try w.writePropertyUVarInt(100, @intFromEnum(quackling.LogicalTypeId.integer));
+    try w.writePropertyUVarInt(100, @backingInt(quackling.LogicalTypeId.integer));
     try w.writeTerminator(); // end LogicalType
     try w.writeFieldId(102); // columns
     try w.writeUVarInt(@as(u64, 1));
@@ -99,7 +99,7 @@ fn prepareResponse(a: std.mem.Allocator, spec: ResultSpec) ![]u8 {
     // 1: result_types
     try w.writeFieldId(1);
     try w.writeUVarInt(@as(u64, 1));
-    try w.writePropertyUVarInt(100, @intFromEnum(quackling.LogicalTypeId.integer));
+    try w.writePropertyUVarInt(100, @backingInt(quackling.LogicalTypeId.integer));
     try w.writeTerminator();
     // 2: result_names
     try w.writeFieldId(2);
@@ -535,6 +535,12 @@ test "column metadata is exposed by name and index" {
     // Out-of-range accessors return null rather than trapping.
     try testing.expectEqual(@as(?[]const u8, null), result.columnName(5));
     try testing.expectEqual(@as(?quackling.LogicalType, null), result.columnType(5));
+
+    const Answer = struct { answer: i64 };
+    var rows = try quackling.typed.iterator(Answer, &result);
+    try testing.expectEqual(@as(i64, 42), (try rows.next()).?.answer);
+    try testing.expectEqual(@as(?Answer, null), try rows.next());
+    try testing.expectError(error.MissingColumn, quackling.typed.Mapping(struct { missing: i64 }).init(&result));
 }
 
 // -- FETCH streaming -----------------------------------------------------------

@@ -280,12 +280,12 @@ pub fn enumDictWidth(count: usize) ?usize {
 const testing = std.testing;
 
 test "wire enum values match DuckDB types.hpp" {
-    try testing.expectEqual(@as(u8, 13), @intFromEnum(LogicalTypeId.integer));
-    try testing.expectEqual(@as(u8, 14), @intFromEnum(LogicalTypeId.bigint));
-    try testing.expectEqual(@as(u8, 25), @intFromEnum(LogicalTypeId.varchar));
-    try testing.expectEqual(@as(u8, 10), @intFromEnum(LogicalTypeId.boolean));
-    try testing.expectEqual(@as(u8, 50), @intFromEnum(LogicalTypeId.hugeint));
-    try testing.expectEqual(@as(u8, 100), @intFromEnum(LogicalTypeId.@"struct"));
+    try testing.expectEqual(@as(u8, 13), @backingInt(LogicalTypeId.integer));
+    try testing.expectEqual(@as(u8, 14), @backingInt(LogicalTypeId.bigint));
+    try testing.expectEqual(@as(u8, 25), @backingInt(LogicalTypeId.varchar));
+    try testing.expectEqual(@as(u8, 10), @backingInt(LogicalTypeId.boolean));
+    try testing.expectEqual(@as(u8, 50), @backingInt(LogicalTypeId.hugeint));
+    try testing.expectEqual(@as(u8, 100), @backingInt(LogicalTypeId.@"struct"));
 }
 
 test "fixed widths match physical storage sizes" {
@@ -304,6 +304,6 @@ test "decimal width follows precision" {
 }
 
 test "unknown type ids do not crash the enum" {
-    const t: LogicalTypeId = @enumFromInt(200);
+    const t: LogicalTypeId = @fromBackingInt(@intCast(200));
     try testing.expectEqualStrings("UNKNOWN", t.name());
 }

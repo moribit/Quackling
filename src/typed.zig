@@ -36,17 +36,17 @@ pub const Error = error{
 pub fn Mapping(comptime T: type) type {
     const info = @typeInfo(T);
     if (info != .@"struct") @compileError("typed mapping requires a struct, got " ++ @typeName(T));
-    const fields = info.@"struct".fields;
+    const fields = info.@"struct";
 
     return struct {
         const Self = @This();
-        columns: [fields.len]usize,
+        columns: [fields.field_names.len]usize,
 
         /// Resolve each field name to a column index.
         pub fn init(result: *const Result) Error!Self {
-            var cols: [fields.len]usize = undefined;
-            inline for (fields, 0..) |f, i| {
-                cols[i] = result.columnIndex(f.name) orelse return Error.MissingColumn;
+            var cols: [fields.field_names.len]usize = undefined;
+            inline for (fields.field_names, 0..) |name, i| {
+                cols[i] = result.columnIndex(name) orelse return Error.MissingColumn;
             }
             return .{ .columns = cols };
         }
@@ -54,9 +54,9 @@ pub fn Mapping(comptime T: type) type {
         /// Build one `T` from a row.
         pub fn read(self: Self, row: Row) Error!T {
             var out: T = undefined;
-            inline for (fields, 0..) |f, i| {
+            inline for (fields.field_names, 0..) |name, i| {
                 const v = try row.get(self.columns[i]);
-                @field(out, f.name) = try convert(f.type, v);
+                @field(out, name) = try convert(fields.field_types[i], v);
             }
             return out;
         }
@@ -98,7 +98,7 @@ pub fn convert(comptime T: type, v: Value) Error!T {
         },
         .pointer => |p| blk: {
             // Only []const u8 is supported; it borrows the chunk buffer.
-            if (p.size != .slice or p.child != u8 or !p.is_const) {
+            if (p.size != .slice or p.child != u8 or !p.attrs.@"const") {
                 @compileError("typed mapping supports []const u8 slices only, got " ++ @typeName(T));
             }
             break :blk v.asSlice() orelse Error.TypeMismatch;

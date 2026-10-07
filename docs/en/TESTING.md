@@ -496,7 +496,7 @@ Useful variations:
 ```sh
 zig build test --summary all              # per-binary pass counts and timings
 zig build test --fuzz                     # coverage-guided fuzzing of the decoder
-zig build test -Dfuzz-optimize=Debug      # fuzz suite in Debug (see below)
+zig build test -Dfuzz-optimize=debug      # fuzz suite in Debug (see below)
 zig build check -Dtarget=wasm32-freestanding   # any target; the CLI is skipped for wasm
 zig build test-integration -Dquack-endpoint=quack:host:9494 -Dquack-token=secret
 ```
@@ -591,7 +591,7 @@ Mitigations, in the order worth trying:
    ReleaseSafe keeps every check the fuzzing relies on (bounds, overflow,
    `unreachable`), which was verified by reintroducing the original varint
    overflow bug and confirming it still panics. `build.zig` selects it
-   automatically when the outer build is Debug; `-Dfuzz-optimize=Debug`
+   automatically when the outer build is Debug; `-Dfuzz-optimize=debug`
    overrides for a Debug-level investigation.
 
 ## Regenerating the golden fixtures

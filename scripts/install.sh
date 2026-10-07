@@ -285,13 +285,13 @@ install_from_source() {
     # errors, so check up front.
     zig_version=$(zig version)
     case "$zig_version" in
-        0.16.*) ;;
-        *) warn "this project targets Zig 0.16.x; found $zig_version" ;;
+        0.17.*) ;;
+        *) warn "this project targets Zig 0.17.x; found $zig_version" ;;
     esac
 
     step "Building quackling from source with Zig $zig_version"
     if [ "$DRY_RUN" = 1 ]; then
-        dim "  would run: zig build -Doptimize=ReleaseSafe"
+        dim "  would run: zig build -Doptimize=safe"
         dim "  would install to $BIN_DIR/$EXE_NAME"
         [ "$NO_ALIAS" = 1 ] || dim "  would link $BIN_DIR/$ALIAS_NAME -> $EXE_NAME"
         return 0
@@ -302,7 +302,7 @@ install_from_source() {
     root=$(dirname "$script_dir")
     [ -f "$root/build.zig" ] || die "build.zig not found; run this from a checkout or drop --build"
 
-    ( cd "$root" && zig build -Doptimize=ReleaseSafe ) || die "build failed"
+    ( cd "$root" && zig build -Doptimize=safe ) || die "build failed"
     built="$root/zig-out/bin/$EXE_NAME"
     [ -f "$built" ] || die "build produced no $EXE_NAME"
     place "$built"

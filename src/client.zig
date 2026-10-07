@@ -406,9 +406,9 @@ pub const Client = struct {
 /// signal available is the text. Matching is deliberately narrow: a false
 /// negative just reports `ServerError`, which is still accurate.
 fn isAuthMessage(m: []const u8) bool {
-    return std.ascii.indexOfIgnoreCase(m, "authenticat") != null or
-        std.ascii.indexOfIgnoreCase(m, "invalid token") != null or
-        std.ascii.indexOfIgnoreCase(m, "unauthorized") != null;
+    return std.ascii.findIgnoreCase(m, "authenticat") != null or
+        std.ascii.findIgnoreCase(m, "invalid token") != null or
+        std.ascii.findIgnoreCase(m, "unauthorized") != null;
 }
 
 const testing = std.testing;

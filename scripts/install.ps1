@@ -284,13 +284,13 @@ function Install-FromSource {
     if (-not $zig) { Stop-Install '-Build needs zig on PATH (https://ziglang.org/download/)' }
 
     $zigVersion = (& zig version).Trim()
-    if ($zigVersion -notlike '0.16.*') {
-        Write-Warn "this project targets Zig 0.16.x; found $zigVersion"
+    if ($zigVersion -notlike '0.17.*') {
+        Write-Warn "this project targets Zig 0.17.x; found $zigVersion"
     }
 
     Write-Step "Building quackling from source with Zig $zigVersion"
     if ($DryRun) {
-        Write-Host '  would run: zig build -Doptimize=ReleaseSafe'
+        Write-Host '  would run: zig build -Doptimize=safe'
         Write-Host "  would install to $Destination"
         if (-not $NoAlias) { Write-Host "  would copy it to qkl.exe alongside" }
         return
@@ -303,7 +303,7 @@ function Install-FromSource {
 
     Push-Location $root
     try {
-        & zig build -Doptimize=ReleaseSafe
+        & zig build -Doptimize=safe
         if ($LASTEXITCODE -ne 0) { Stop-Install 'build failed' }
     } finally {
         Pop-Location

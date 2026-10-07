@@ -43,7 +43,7 @@ the implementation is structured and verified.
 
 | Fact | Value |
 |------|-------|
-| Zig version | 0.16.0 |
+| Zig version | 0.17.0 |
 | Verified against | DuckDB v1.5.5, `quack` extension, Quack protocol version 1 |
 | Default port | 9494 |
 | HTTP path | `/quack` |

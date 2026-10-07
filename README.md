@@ -111,7 +111,7 @@ qkl "SELECT 42"                  # same command, 3 characters
 # pin a version, choose a location, or build from source instead
 sh install.sh --version v0.1.0
 sh install.sh --bin-dir ~/bin
-sh install.sh --build            # needs Zig 0.16
+sh install.sh --build            # needs Zig 0.17
 sh install.sh --dry-run          # show what it would do
 sh install.sh --no-alias         # install only `quackling`
 ```
@@ -126,7 +126,7 @@ all six platforms into `zig-out/release/` with a matching `SHA256SUMS`.
 
 ### Library
 
-Requires **Zig 0.16.0**.
+Requires **Zig 0.17.0**.
 
 ```sh
 zig fetch --save git+https://github.com/<you>/quackling
@@ -623,7 +623,7 @@ decodes of mutated input, which costs ~14 s in Debug and ~0.2 s optimised — a
 ~680x difference driven by allocator bookkeeping and the absence of inlining,
 not by the amount of work. ReleaseSafe keeps every check the fuzzing relies on
 (bounds, overflow, `unreachable`), verified by reintroducing the original varint
-overflow bug and confirming it still panics. Use `-Dfuzz-optimize=Debug` to
+overflow bug and confirming it still panics. Use `-Dfuzz-optimize=debug` to
 override.
 
 That process found and fixed real defects that a green test run had hidden:

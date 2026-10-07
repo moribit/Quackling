@@ -304,7 +304,7 @@ test "over-long varints error instead of overflowing the shift counter" {
     // Regression: a `u6`/`u7` shift counter panics on its own increment before
     // any bound check can fire. Found by the fuzz corpus, not by hand.
     // 20 continuation bytes pushes shift well past 64.
-    const long = [_]u8{0xFF} ** 20 ++ [_]u8{0x00};
+    const long = @as([20]u8, @splat(0xFF)) ++ [_]u8{0x00};
     var r = Reader.init(&long);
     try testing.expectError(Error.VarIntOverflow, r.readUVarInt(u64));
 

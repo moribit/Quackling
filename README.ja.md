@@ -111,7 +111,7 @@ qkl "SELECT 42"                  # 同じコマンド。3 文字
 # バージョン指定、配置先の変更、ソースからのビルド
 sh install.sh --version v0.1.0
 sh install.sh --bin-dir ~/bin
-sh install.sh --build            # Zig 0.16 が必要
+sh install.sh --build            # Zig 0.17 が必要
 sh install.sh --dry-run          # 実行内容の確認のみ
 sh install.sh --no-alias         # `quackling` のみを配置
 ```
@@ -126,7 +126,7 @@ sh install.sh --no-alias         # `quackling` のみを配置
 
 ### ライブラリ
 
-**Zig 0.16.0** が必要です。
+**Zig 0.17.0** が必要です。
 
 ```sh
 zig fetch --save git+https://github.com/<you>/quackling
@@ -625,7 +625,7 @@ FETCH 上限、プールのロックを網羅します。CI で実行され、�
 簿記処理とインライン化の欠如によるものです。ReleaseSafe はファジングが依拠する
 検査 (境界、オーバーフロー、`unreachable`) をすべて維持しており、
 これは元の varint オーバーフローのバグを再導入して依然 panic することを
-確認して検証済みです。`-Dfuzz-optimize=Debug` で上書きできます。
+確認して検証済みです。`-Dfuzz-optimize=debug` で上書きできます。
 
 このプロセスは、緑のテスト結果が隠していた実際の欠陥を発見し修正しました。
 

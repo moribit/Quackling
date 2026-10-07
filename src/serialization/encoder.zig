@@ -58,7 +58,7 @@ pub const Column = struct {
 // -- LogicalType ---------------------------------------------------------------
 
 pub fn encodeLogicalType(w: *Writer, t: LogicalType) Error!void {
-    try w.writePropertyUVarInt(ty_id, @intFromEnum(t.id));
+    try w.writePropertyUVarInt(ty_id, @backingInt(t.id));
 
     // Only DECIMAL needs extra info among the types we can send; everything
     // else is fully described by its id.
@@ -66,7 +66,7 @@ pub fn encodeLogicalType(w: *Writer, t: LogicalType) Error!void {
         const d = t.decimal orelse return Error.UnsupportedType;
         try w.writeFieldId(ty_info);
         try w.writeBool(true); // unique_ptr present
-        try w.writePropertyUVarInt(eti_type, @intFromEnum(lt.ExtraTypeInfoType.decimal));
+        try w.writePropertyUVarInt(eti_type, @backingInt(lt.ExtraTypeInfoType.decimal));
         try w.writePropertyUVarInt(eti_decimal_width, d.width);
         try w.writePropertyUVarInt(eti_decimal_scale, d.scale);
         try w.writeTerminator(); // end ExtraTypeInfo

@@ -37,7 +37,7 @@ an estimate.
 | Harness | [`bench/bench.zig`](../../bench/bench.zig) |
 
 ```sh
-zig build bench -Doptimize=ReleaseFast
+zig build bench -Doptimize=fast
 ```
 
 The codec benchmarks do **no network I/O**. They decode golden fixtures captured
@@ -134,7 +134,7 @@ With the network in the loop, over loopback HTTP against a live
 `quack_serve()` instance:
 
 ```sh
-zig build -Doptimize=ReleaseFast
+zig build -Doptimize=fast
 ./zig-out/bin/example-streaming
 ```
 

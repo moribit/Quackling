@@ -107,8 +107,8 @@ size above is what you get from a plain `zig build wasm`. Ask for a mode
 explicitly if you want something else:
 
 ```sh
-zig build wasm -Doptimize=ReleaseSmall   # smallest
-zig build wasm -Doptimize=ReleaseFast    # faster decode, larger module
+zig build wasm -Doptimize=small   # smallest
+zig build wasm -Doptimize=fast    # faster decode, larger module
 ```
 
 Test steps that touch this layer:

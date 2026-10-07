@@ -474,7 +474,7 @@ zig build run -- "SELECT 42"    # the CLI
 ```sh
 zig build test --summary all              # per-binary pass counts and timings
 zig build test --fuzz                     # coverage-guided fuzzing of the decoder
-zig build test -Dfuzz-optimize=Debug      # fuzz suite in Debug (see below)
+zig build test -Dfuzz-optimize=debug      # fuzz suite in Debug (see below)
 zig build check -Dtarget=wasm32-freestanding   # any target; the CLI is skipped for wasm
 zig build test-integration -Dquack-endpoint=quack:host:9494 -Dquack-token=secret
 ```
@@ -564,7 +564,7 @@ CAUGHT と記録されるまで、ミュータントごとのタイムアウト 
    テスト実行全体の約 80% を占めていた。ReleaseSafe はファジングが依拠する検査
    (境界、桁溢れ、`unreachable`) をすべて保持しており、これは元の varint 桁溢れバグを
    再導入して依然パニックすることを確認して検証済みである。外側のビルドが Debug の
-   ときは `build.zig` が自動的に選択し、`-Dfuzz-optimize=Debug` で上書きして Debug
+   ときは `build.zig` が自動的に選択し、`-Dfuzz-optimize=debug` で上書きして Debug
    レベルの調査ができる。
 
 ## ゴールデンフィクスチャの再生成

@@ -49,7 +49,7 @@ pub fn build(b: *std.Build) void {
 
         const run_cli = b.addRunArtifact(cli);
         run_cli.step.dependOn(b.getInstallStep());
-        if (b.args) |args| run_cli.addArgs(args);
+        run_cli.addPassthruArgs();
         b.step("run", "Run the Quack CLI").dependOn(&run_cli.step);
     }
 
@@ -129,8 +129,8 @@ pub fn build(b: *std.Build) void {
     const fuzz_opt = b.option(
         std.builtin.OptimizeMode,
         "fuzz-optimize",
-        "Optimization mode for the fuzz suite (default: ReleaseSafe)",
-    ) orelse if (optimize == .Debug) .ReleaseSafe else optimize;
+        "Optimization mode for the fuzz suite (default: safe)",
+    ) orelse if (optimize == .debug) .safe else optimize;
     const fuzz_lib = b.createModule(.{
         .root_source_file = b.path("src/root.zig"),
         .target = target,
@@ -198,7 +198,7 @@ pub fn build(b: *std.Build) void {
     // Benchmarking a Debug build measures the wrong thing, and the library
     // itself must be optimised too - not just the harness around it.
     const bench_opt: std.builtin.OptimizeMode =
-        if (optimize == .Debug) .ReleaseFast else optimize;
+        if (optimize == .debug) .fast else optimize;
     const bench_lib = b.createModule(.{
         .root_source_file = b.path("src/root.zig"),
         .target = target,
@@ -216,7 +216,7 @@ pub fn build(b: *std.Build) void {
     });
     const bench = b.addExecutable(.{ .name = "quack-bench", .root_module = bench_mod });
     const run_bench = b.addRunArtifact(bench);
-    if (b.args) |args| run_bench.addArgs(args);
+    run_bench.addPassthruArgs();
     b.step("bench", "Run decode/encode benchmarks").dependOn(&run_bench.step);
 
     // ---------------------------------------------------------------------
@@ -241,11 +241,11 @@ pub fn build(b: *std.Build) void {
             .target = resolved,
             // Release binaries keep safety checks: a client that silently
             // misreads a hostile response is worse than one that aborts.
-            .optimize = .ReleaseSafe,
+            .optimize = .safe,
             .imports = &.{.{ .name = "quackling", .module = b.createModule(.{
                 .root_source_file = b.path("src/root.zig"),
                 .target = resolved,
-                .optimize = .ReleaseSafe,
+                .optimize = .safe,
             }) }},
         });
         rel_mod.addOptions("build_options", cli_opts);
@@ -277,11 +277,11 @@ pub fn build(b: *std.Build) void {
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/wasm/exports.zig"),
             .target = wasm_target,
-            .optimize = if (optimize == .Debug) .ReleaseSmall else optimize,
+            .optimize = if (optimize == .debug) .small else optimize,
             .imports = &.{.{ .name = "quackling", .module = b.createModule(.{
                 .root_source_file = b.path("src/root.zig"),
                 .target = wasm_target,
-                .optimize = if (optimize == .Debug) .ReleaseSmall else optimize,
+                .optimize = if (optimize == .debug) .small else optimize,
             }) }},
         }),
     });

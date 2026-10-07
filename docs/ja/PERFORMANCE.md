@@ -36,7 +36,7 @@
 | ハーネス | [`bench/bench.zig`](../../bench/bench.zig) |
 
 ```sh
-zig build bench -Doptimize=ReleaseFast
+zig build bench -Doptimize=fast
 ```
 
 コーデックのベンチマークは**ネットワーク I/O を一切行いません**。実サーバから採取した
@@ -130,7 +130,7 @@ DuckDB が MAP を `LIST(STRUCT(key, value))` として格納し、Quackling が
 ループバック HTTP 経由の測定です。
 
 ```sh
-zig build -Doptimize=ReleaseFast
+zig build -Doptimize=fast
 ./zig-out/bin/example-streaming
 ```
 

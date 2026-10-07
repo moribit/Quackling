@@ -109,7 +109,7 @@ pub const NativeTransport = struct {
             return Error.ResponseTooLarge;
         }
 
-        const status = @intFromEnum(result.status);
+        const status = @backingInt(result.status);
         return .{ .status = status, .body = owned, .owned = true };
     }
 

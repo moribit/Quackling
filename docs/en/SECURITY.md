@@ -400,7 +400,7 @@ versus ~0.2 s optimised (~680×, driven by allocator bookkeeping and the absence
 of inlining, not by the amount of work). ReleaseSafe keeps every check the
 fuzzing relies on — bounds, overflow, `unreachable` — which was verified by
 reintroducing the original varint overflow bug and confirming it still panics.
-`-Dfuzz-optimize=Debug` overrides for a Debug-level investigation.
+`-Dfuzz-optimize=debug` overrides for a Debug-level investigation.
 
 The WASM FFI boundary is treated as a second untrusted surface, since JavaScript
 hands raw indices and lengths straight to the exports:

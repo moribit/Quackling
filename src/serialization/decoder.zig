@@ -82,7 +82,7 @@ pub fn decodeLogicalType(r: *Reader, allocator: std.mem.Allocator) Error!Logical
         const f = try r.readFieldId();
         if (f == term) break;
         switch (f) {
-            ty_id => result.id = @enumFromInt(try r.readUVarInt(u8)),
+            ty_id => result.id = @fromBackingInt(@intCast(try r.readUVarInt(u8))),
             ty_info => {
                 // unique_ptr<ExtraTypeInfo>: present byte, then the object.
                 const present = try r.readBool();
@@ -103,7 +103,7 @@ fn decodeExtraTypeInfo(r: *Reader, allocator: std.mem.Allocator, out: *LogicalTy
         const f = try r.readFieldId();
         if (f == term) break;
         switch (f) {
-            eti_type => info_type = @enumFromInt(try r.readUVarInt(u8)),
+            eti_type => info_type = @fromBackingInt(@intCast(try r.readUVarInt(u8))),
             eti_alias => out.alias = try r.readString(),
             eti_extension => {
                 // unique_ptr<ExtensionTypeInfo>; skip when absent.
@@ -279,7 +279,7 @@ fn decodeVectorFields(
 
         switch (f) {
             vec_type => {
-                kind = @enumFromInt(try r.readUVarInt(u8));
+                kind = @fromBackingInt(@intCast(try r.readUVarInt(u8)));
                 switch (kind) {
                     // DuckDB never emits FSST on the wire: `Vector::Serialize`
                     // has no FSST branch, so such a vector falls through to

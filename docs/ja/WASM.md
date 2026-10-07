@@ -108,8 +108,8 @@ cp web/quackling.wasm examples/browser/   # manual: the build does not do this
 指定する。
 
 ```sh
-zig build wasm -Doptimize=ReleaseSmall   # smallest
-zig build wasm -Doptimize=ReleaseFast    # faster decode, larger module
+zig build wasm -Doptimize=small   # smallest
+zig build wasm -Doptimize=fast    # faster decode, larger module
 ```
 
 この層に関係するテストステップ:

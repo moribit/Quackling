@@ -71,7 +71,7 @@ pub const MessageHeader = struct {
 
     pub fn encode(self: MessageHeader, w: *Writer) !void {
         // field 1 is a plain WriteProperty: always emitted.
-        try w.writePropertyUVarInt(hdr_type, @intFromEnum(self.type));
+        try w.writePropertyUVarInt(hdr_type, @backingInt(self.type));
         // field 2 is WritePropertyWithDefault: omitted when empty.
         try w.writePropertyStringWithDefault(hdr_connection_id, self.connection_id);
         // field 3 is a plain WriteProperty of optional_idx: always emitted,
@@ -89,7 +89,7 @@ pub const MessageHeader = struct {
             const f = try r.readFieldId();
             if (f == term) break;
             switch (f) {
-                hdr_type => h.type = @enumFromInt(try r.readUVarInt(u8)),
+                hdr_type => h.type = @fromBackingInt(@intCast(try r.readUVarInt(u8))),
                 hdr_connection_id => h.connection_id = try r.readString(),
                 hdr_client_query_id => h.client_query_id = try r.readOptionalIdx(),
                 else => return Error.UnexpectedField,
@@ -384,10 +384,10 @@ test "empty connection id is omitted but decodes back to empty" {
 }
 
 test "message type wire values match DuckDB" {
-    try testing.expectEqual(@as(u8, 1), @intFromEnum(MessageType.connection_request));
-    try testing.expectEqual(@as(u8, 4), @intFromEnum(MessageType.prepare_response));
-    try testing.expectEqual(@as(u8, 7), @intFromEnum(MessageType.fetch_request));
-    try testing.expectEqual(@as(u8, 100), @intFromEnum(MessageType.error_response));
+    try testing.expectEqual(@as(u8, 1), @backingInt(MessageType.connection_request));
+    try testing.expectEqual(@as(u8, 4), @backingInt(MessageType.prepare_response));
+    try testing.expectEqual(@as(u8, 7), @backingInt(MessageType.fetch_request));
+    try testing.expectEqual(@as(u8, 100), @backingInt(MessageType.error_response));
 }
 
 test "connection request encodes the exact bytes the server accepted" {
@@ -438,7 +438,7 @@ test "an unknown field in the header is rejected, not skipped" {
     var buf: std.ArrayList(u8) = .empty;
     defer buf.deinit(testing.allocator);
     var w = Writer.init(testing.allocator, &buf);
-    try w.writePropertyUVarInt(hdr_type, @intFromEnum(MessageType.prepare_response));
+    try w.writePropertyUVarInt(hdr_type, @backingInt(MessageType.prepare_response));
     try w.writePropertyUVarInt(4242, @as(u64, 7)); // not a header field
     try w.writeTerminator();
 
@@ -462,7 +462,7 @@ test "unknown message type decodes without crashing" {
     var buf: std.ArrayList(u8) = .empty;
     defer buf.deinit(testing.allocator);
     var w = Writer.init(testing.allocator, &buf);
-    try (MessageHeader{ .type = @enumFromInt(77) }).encode(&w);
+    try (MessageHeader{ .type = @fromBackingInt(@intCast(77)) }).encode(&w);
     var r = Reader.init(buf.items);
     const got = try MessageHeader.decode(&r);
     try testing.expectEqualStrings("UNKNOWN", got.type.name());
