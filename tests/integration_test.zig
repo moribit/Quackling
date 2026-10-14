@@ -594,12 +594,18 @@ test "integration: streaming memory is bounded by batch size, not result size" {
     var harness_active = true;
     defer if (harness_active) h.deinit();
 
-    const small = try measure(&h.client, &counting, 10_000);
-    const large = try measure(&h.client, &counting, 500_000);
+    // Both queries must fill a FETCH batch (normally 12 x 2048 rows).
+    // A 10k-row baseline only measures a partial batch and makes the ratio
+    // depend on the server's batching and the HTTP allocator's growth policy.
+    const small = try measure(&h.client, &counting, 100_000);
+    const large = try measure(&h.client, &counting, 5_000_000);
 
     // 50x the rows must not cost anything like 50x the memory. A generous 4x
     // ceiling still fails loudly if streaming regresses into buffering.
-    try testing.expect(large < small * 4);
+    if (large >= small * 4) {
+        std.debug.print("streaming peak bytes: small={d}, large={d}\n", .{ small, large });
+        return error.TestUnexpectedResult;
+    }
 
     h.deinit();
     harness_active = false;
