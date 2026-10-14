@@ -531,9 +531,6 @@ test "integration: streaming memory is bounded by batch size, not result size" {
     // FETCH batch, not the whole result. Asserted by counting *live*
     // allocations at the high-water mark rather than by timing or RSS, which
     // are too noisy to gate a test on.
-    var h = try Harness.init(testing.allocator);
-    defer h.deinit();
-
     const Counting = struct {
         child: std.mem.Allocator,
         live: usize = 0,
@@ -578,7 +575,7 @@ test "integration: streaming memory is bounded by batch size, not result size" {
     // Stream `n` rows and report the peak live-byte count.
     const measure = struct {
         fn run(client: *quackling.Client, counting: *Counting, n: u64) !usize {
-            counting.peak = 0;
+            counting.peak = counting.live;
             var buf: [96]u8 = undefined;
             const sql = try std.fmt.bufPrint(&buf, "SELECT i FROM range({d}) t(i)", .{n});
             var result = try client.query(sql);
@@ -591,8 +588,11 @@ test "integration: streaming memory is bounded by batch size, not result size" {
     }.run;
 
     var counting = Counting{ .child = testing.allocator };
-    // Swap the client's allocator for the measuring one.
-    h.client.allocator = counting.allocator();
+    // Count the whole lifetime: queries can resize or free buffers allocated
+    // during the handshake, and transport allocations belong to the peak too.
+    var h = try Harness.init(counting.allocator());
+    var harness_active = true;
+    defer if (harness_active) h.deinit();
 
     const small = try measure(&h.client, &counting, 10_000);
     const large = try measure(&h.client, &counting, 500_000);
@@ -601,8 +601,9 @@ test "integration: streaming memory is bounded by batch size, not result size" {
     // ceiling still fails loudly if streaming regresses into buffering.
     try testing.expect(large < small * 4);
 
-    // Restore before teardown so the client frees with the allocator it used.
-    h.client.allocator = testing.allocator;
+    h.deinit();
+    harness_active = false;
+    try testing.expectEqual(@as(usize, 0), counting.live);
 }
 
 // -- append (bulk insert) --------------------------------------------------------
